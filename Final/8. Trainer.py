@@ -22,7 +22,7 @@ class Trainer:
         Initialize trainer with model, data loaders, and training configuration
         
         ⭐ Step A — Store core components
-            ✔ model: neural network to train (GRU4Rec or Transformer)
+            ✔ model: neural network to train (GRU or Transformer)
             ✔ Move model to device (GPU/CPU) for computation
             ✔ train_loader: DataLoader for training batches
             ✔ val_loader: DataLoader for validation batches
@@ -282,7 +282,7 @@ class Trainer:
         
         ⭐ Step B — Construct save path
             ✔ path = config.MODEL_DIR / f'{model_name}_{name}.pt'
-            ✔ Examples: 'GRU4Rec_best.pt', 'Transformer_epoch_5.pt'
+            ✔ Examples: 'GRU_best.pt', 'Transformer_epoch_5.pt'
         
         ⭐ Step C — Save to disk
             ✔ torch.save(checkpoint, path)

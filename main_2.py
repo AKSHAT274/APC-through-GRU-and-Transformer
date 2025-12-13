@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from PlayListDataset import PlaylistDataset
 from torch.utils.data import DataLoader
-from GRU4Rec import GRU4Rec
+from GRU import GRU
 from Trainer import Trainer
 from PlaylistTransformer import PlaylistTransformer
 from DeepLearningVisualizer import DeepLearningVisualizer
@@ -127,16 +127,16 @@ def main():
         print(f"  ⚠️ HIGH UNK RATE - Vocabulary mismatch!")
 
     print("=" * 80 + "\n")
-    # Train GRU4Rec
-    print("\n[3/5] Training GRU4Rec...")
-    gru_model = GRU4Rec(
+    # Train GRU
+    print("\n[3/5] Training GRU...")
+    gru_model = GRU(
         num_items=num_items,
         embedding_dim=config.EMBEDDING_DIM,
         hidden_dim=config.HIDDEN_DIM,
         dropout=config.DROPOUT
     )
     
-    gru_trainer = Trainer(gru_model, train_loader, val_loader, config, "GRU4Rec")
+    gru_trainer = Trainer(gru_model, train_loader, val_loader, config, "GRU")
     gru_results = gru_trainer.train()
     
     # Train Transformer
@@ -159,7 +159,7 @@ def main():
     
     # Load best models
     gru_model.load_state_dict(
-        torch.load(config.MODEL_DIR / 'GRU4Rec_best.pt')['model_state_dict']
+        torch.load(config.MODEL_DIR / 'GRU_best.pt')['model_state_dict']
     )
     transformer_model.load_state_dict(
         torch.load(config.MODEL_DIR / 'Transformer_best.pt')['model_state_dict']
@@ -171,7 +171,7 @@ def main():
     print("\n" + "=" * 80)
     print("FINAL TEST RESULTS")
     print("=" * 80)
-    print("\nGRU4Rec:")
+    print("\nGRU:")
     for k, acc in gru_test_accs.items():
         print(f"  Top-{k}: {acc:.2f}%")
     
@@ -187,14 +187,14 @@ def main():
     viz = DeepLearningVisualizer(config)
     
     trainers_dict = {
-        'GRU4Rec': gru_trainer,
+        'GRU': gru_trainer,
         'Transformer': transformer_trainer
     }
     viz.plot_training_curves(trainers_dict)
     
     # Load baseline results if available
     results_dict = {
-        'GRU4Rec': gru_test_accs,
+        'GRU': gru_test_accs,
         'Transformer': trans_test_accs
     }
     
@@ -203,9 +203,27 @@ def main():
         with open(config.OUTPUT_DIR / "metrics" / "summary.json", 'r') as f:
             summary = json.load(f)
             if 'baseline_results' in summary:
-                results_dict.update(summary['baseline_results'])
-    except:
-        print("Could not load baseline results")
+                # Convert string keys to integers and decimal values to percentages
+                for model_name, model_results in summary['baseline_results'].items():
+                    # Convert: "1": 0.03 -> 1: 3.0 (to match deep learning format)
+                    results_dict[model_name] = {int(k): v * 100 for k, v in model_results.items()}
+                print(f"✓ Loaded baseline results for: {', '.join(summary['baseline_results'].keys())}")
+    except Exception as e:
+        print(f"Could not load baseline results: {e}")
+    
+    # Debug: Print structure of results_dict
+    print("\n" + "=" * 80)
+    print("DEBUG: results_dict structure")
+    print("=" * 80)
+    for model_name, model_results in results_dict.items():
+        print(f"\n{model_name}:")
+        print(f"  Type: {type(model_results)}")
+        if isinstance(model_results, dict):
+            print(f"  Keys: {list(model_results.keys())}")
+            print(f"  Sample values: {dict(list(model_results.items())[:3])}")
+        else:
+            print(f"  Value: {model_results}")
+    print("=" * 80 + "\n")
     
     viz.plot_model_comparison(results_dict)
     viz.visualize_attention(transformer_model, test_dataset, idx=10)
@@ -213,7 +231,7 @@ def main():
     # Save final results
     final_results = {
         'test_results': {
-            'GRU4Rec': gru_test_accs,
+            'GRU': gru_test_accs,
             'Transformer': trans_test_accs
         },
         'config': {

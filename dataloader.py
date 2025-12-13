@@ -74,8 +74,8 @@ class SpotifyDataLoader:
 
 
         print("Building track URI to ID mapping...")
-        if 'track_id' in audio_df.columns and 'id' not in audio_df.columns:
-            audio_df = audio_df.rename(columns={'track_id': 'id'})
+        if 'track_uri' in audio_df.columns and 'id' not in audio_df.columns:
+            audio_df = audio_df.rename(columns={'track_uri': 'id'})
         
         uri_to_id = {}
         for _, row in tqdm(audio_df.iterrows(), total=len(audio_df), desc="Mapping URIs"):

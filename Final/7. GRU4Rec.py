@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class GRU4Rec(nn.Module):
+class GRU(nn.Module):
     """GRU-based sequential recommendation model optimized for playlist continuation"""
     
     def __init__(self, num_items, embedding_dim=256, hidden_dim=512, dropout=0.3):
@@ -11,7 +11,7 @@ class GRU4Rec(nn.Module):
         num_items: vocabulary size (all unique tracks)
         
         
-        Initialize GRU4Rec architecture with embeddings, GRU layers, and attention
+        Initialize GRU architecture with embeddings, GRU layers, and attention
         
         ⭐ Step A — Define embedding layer
             ✔ num_items: vocabulary size (all unique tracks)

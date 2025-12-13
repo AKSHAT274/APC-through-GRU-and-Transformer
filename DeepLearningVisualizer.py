@@ -61,9 +61,19 @@ class DeepLearningVisualizer:
         width = 0.15
         
         for i, model in enumerate(models):
-            accuracies = [results_dict[model][k] for k in k_values]
-            ax.bar(x + i * width, accuracies, width, label=model)
-        
+            # Handle missing k values gracefully
+            accuracies = []
+            for k in k_values:
+                if k in results_dict[model]:
+                    accuracies.append(results_dict[model][k])
+                else:
+                    # Skip this model if it doesn't have all required k values
+                    print(f"⚠️ Warning: {model} missing Top-{k} results, skipping this model")
+                    break
+            else:
+                # Only plot if we have all k values
+                ax.bar(x + i * width, accuracies, width, label=model)
+   
         ax.set_xlabel('Top-K')
         ax.set_ylabel('Accuracy (%)')
         ax.set_title('Model Performance Comparison (All Methods)')

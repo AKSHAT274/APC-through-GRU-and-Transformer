@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class GRU4Rec(nn.Module):
+class GRU(nn.Module):
     """GRU optimized for your data profile"""
     
     def __init__(self, num_items, embedding_dim=256, hidden_dim=512, dropout=0.3):
