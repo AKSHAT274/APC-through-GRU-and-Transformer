@@ -206,7 +206,7 @@ def main():
                 # Convert string keys to integers and decimal values to percentages
                 for model_name, model_results in summary['baseline_results'].items():
                     # Convert: "1": 0.03 -> 1: 3.0 (to match deep learning format)
-                    results_dict[model_name] = {int(k): v * 100 for k, v in model_results.items()}
+                    results_dict[model_name] = {int(k): v for k, v in model_results.items()}
                 print(f"✓ Loaded baseline results for: {', '.join(summary['baseline_results'].keys())}")
     except Exception as e:
         print(f"Could not load baseline results: {e}")
