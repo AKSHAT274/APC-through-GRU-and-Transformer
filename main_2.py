@@ -1,4 +1,4 @@
-from TraningConfig import TrainingConfig
+from TrainingConfig import TrainingConfig
 import torch
 import numpy as np
 import pandas as pd
